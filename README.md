@@ -34,13 +34,9 @@ Tests: `cd backend && pytest -q` (auth, refresh rotation, role enforcement, assi
 
 ## Data model
 
-```
-users ──< project_members >── projects          (many-to-many; role = owner|member)
-  │                               │
-  │                               ├──< tasks ──< comments
-  │                               └──< activities
-  └──< refresh_tokens
-```
+![TaskFlow data model](docs/data-model.png)
+
+
 
 | Table | Key columns / notes |
 |---|---|
@@ -105,4 +101,15 @@ Every data view has loading and error (with Retry) states; forms show inline fie
 ## With more time
 
 Redis pub/sub for sockets, invitation accept flow, per-column ordering, cursor pagination, frontend tests (Vitest/Playwright), Docker Compose, CI.
+
+## Where I used AI and what I learned
+
+I used AI (Claude Code) mainly for the **frontend** (React): the page layouts, the board / backlog / dashboard screens, the task modal and the styling. I then read through it, ran it and checked how it behaves rather than taking it as-is.
+
+What I learned from it:
+
+- **Access token in memory, refresh token in an httpOnly cookie.** Keeping the short-lived token out of `localStorage` means XSS can't steal a long-lived credential. On a 401 the client refreshes once and retries the request; parallel requests share a single refresh call so the rotating refresh token isn't used twice.
+- **How the WebSocket client works.** It connects with the access token, subscribes to a project, reconnects with exponential backoff after a drop, and then refetches (`resync`) so nothing missed while offline is lost. The REST API is the source of truth; the socket only tells the UI when to update.
+- **Loading / error / in-flight state patterns.** Small hooks (`useAsync`, `useAction`) give every view a loading and error state and stop double-submits, instead of repeating that logic in every component.
+- **Optimistic updates with rollback.** Dragging a card moves it immediately and puts it back with a clear message if the server rejects it (for example the "only the assignee or owner can mark Done" rule).
 
