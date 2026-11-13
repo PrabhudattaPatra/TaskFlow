@@ -104,7 +104,7 @@ Redis pub/sub for sockets, invitation accept flow, per-column ordering, cursor p
 
 ## Where I used AI and what I learned
 
-I used AI (Claude Code) mainly for the **frontend** (React): the page layouts, the board / backlog / dashboard screens, the task modal and the styling. I then read through it, ran it and checked how it behaves rather than taking it as-is.
+I used AI mainly for the **frontend** (React): the page layouts, the board / backlog / dashboard screens, the task modal and the styling. I then read through it, ran it and checked how it behaves rather than taking it as-is.
 
 What I learned from it:
 
